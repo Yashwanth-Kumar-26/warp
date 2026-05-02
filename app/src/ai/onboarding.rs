@@ -10,7 +10,7 @@ use crate::auth::AuthStateProvider;
 use crate::experiments::FreeTierDefaultModel;
 use crate::workspaces::user_workspaces::UserWorkspaces;
 
-use super::llms::{DisableReason, LLMInfo, LLMPreferences};
+use super::llms::{LLMInfo, LLMPreferences};
 
 /// mirrors server-side model ids
 const AUTO_OPEN_LLM_ID: &str = "auto-open";

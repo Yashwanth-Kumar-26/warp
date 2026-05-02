@@ -222,7 +222,7 @@ struct ModelSearchItem {
 }
 
 impl ModelSearchItem {
-    fn new(llm: &LLMInfo, active_llm_id: &LLMId, app: &AppContext) -> Self {
+    fn new(llm: &LLMInfo, active_llm_id: &LLMId, _app: &AppContext) -> Self {
         // If the model requires an upgrade but the user already has a BYOK key
         // for this provider, treat it as enabled by clearing the disable reason.
         let disable_reason = None;
