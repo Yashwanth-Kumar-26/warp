@@ -243,56 +243,6 @@ impl Requests {
                                 ctx
                             );
                         }
-                        Ok(GenerateDialogueResult::Failure { request_limit_info }) if request_limit_info.limit <= request_limit_info.num_requests_used_since_refresh => {
-                            cache_request_limit_info(request_limit_info, ctx);
-                            model.request_limit_info = request_limit_info;
-                            let next_time = if let Some(next_refresh_time) = model.serialized_time_until_refresh() {
-                                format!("after {next_refresh_time}")
-                            } else {
-                                String::from("later")
-                            };
-
-                            let auth_state = AuthStateProvider::as_ref(ctx).get();
-                            let response = if let Some(team) = UserWorkspaces::as_ref(ctx).current_team() {
-                                let current_user_email = auth_state.user_email().unwrap_or_default();
-                                let has_admin_permissions = team.has_admin_permissions(&current_user_email);
-                                if team.billing_metadata.can_upgrade_to_higher_tier_plan() {
-                                    if has_admin_permissions {
-                                        let upgrade_url = UserWorkspaces::upgrade_link_for_team(team.uid);
-                                        format!("It seems you're out of credits. Please try again {next_time}.\n\n[Upgrade]({upgrade_url}) for more credits.")
-                                    } else {
-                                        format!("It seems you're out of credits. Please try again {next_time}.\n\nContact a team admin to upgrade for more credits.")
-                                    }
-                                } else {
-                                    format!("It seems you're out of credits. Please try again {next_time}.")
-                                }
-                            } else {
-                                let user_id = auth_state.user_id().unwrap_or_default();
-                                let upgrade_url = UserWorkspaces::upgrade_link(user_id);
-                                format!("It seems you're out of credits. Please try again {next_time}.\n\n[Upgrade]({upgrade_url}) for more credits.")
-                            };
-                            let response_in_markdown = markdown_segments_from_text(
-                                transcript_part_index,
-                                TranscriptPartSubType::Answer,
-                                &response,
-                            );
-                            model.current_transcript.push(TranscriptPart {
-                                user: request,
-                                assistant: AssistantTranscriptPart {
-                                    is_error: true,
-                                    copy_all_tooltip_and_button_mouse_handles: None,
-                                    formatted_message: FormattedTranscriptMessage {
-                                        markdown: response_in_markdown,
-                                        raw: response,
-                                    },
-                                },
-                            });
-
-                            send_telemetry_from_ctx!(
-                                TelemetryEvent::WarpAIRequestIssued { result: WarpAIRequestResult::OutOfRequests},
-                                ctx
-                            );
-                        }
                         _ => {
                             let response = "We're experiencing technical difficulties right now. Please try again later.".to_owned();
                             let response_in_markdown = markdown_segments_from_text(
@@ -378,18 +328,11 @@ impl Requests {
     /// Returns the number of remaining requests the user has based on their latest rate limit info.
     /// If the current time is past the next refresh time, then the number of remaining reqs is the limit.
     pub fn num_remaining_reqs(&self) -> usize {
-        match self.remaining_time_to_refresh_std() {
-            Err(_) => self.request_limit_info.limit,
-            Ok(t) if t.is_zero() => self.request_limit_info.limit,
-            Ok(_t) => {
-                self.request_limit_info.limit
-                    - self.request_limit_info.num_requests_used_since_refresh
-            }
-        }
+        999999
     }
 
     pub fn num_requests_used(&self) -> usize {
-        self.request_limit_info.limit - self.num_remaining_reqs()
+        0
     }
 
     pub fn request_limit(&self) -> usize {

@@ -1,0 +1,7 @@
+{
+  "provider": "nvidia",
+  "model_default": "z-ai/glm4.7",
+  "model_opus": "[SAME_AS_DEFAULT]",
+  "model_sonnet": "[SAME_AS_DEFAULT]",
+  "model_haiku": "[SAME_AS_DEFAULT]"
+}

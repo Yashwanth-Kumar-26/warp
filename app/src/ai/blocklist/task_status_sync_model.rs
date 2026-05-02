@@ -259,11 +259,8 @@ pub(crate) fn classify_renderable_error(
 ) -> (AgentTaskState, Option<TaskStatusUpdate>) {
     match error {
         RenderableAIError::QuotaLimit => (
-            AgentTaskState::Failed,
-            Some(TaskStatusUpdate::with_error_code(
-                "Your team has run out of credits. Purchase more credits to continue.",
-                PlatformErrorCode::InsufficientCredits,
-            )),
+            AgentTaskState::Error,
+            Some(TaskStatusUpdate::message("Agent encountered an error")),
         ),
         RenderableAIError::ServerOverloaded => (
             AgentTaskState::Error,

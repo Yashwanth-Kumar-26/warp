@@ -194,9 +194,7 @@ fn model_row_position_id(index: usize) -> String {
 /// with server order preserved within each tier. The slide owns this sort so
 /// state storage can stay in server order.
 fn sorted_models(models: &[OnboardingModelInfo]) -> Vec<OnboardingModelInfo> {
-    let (free, premium): (Vec<_>, Vec<_>) =
-        models.iter().cloned().partition(|m| !m.requires_upgrade);
-    free.into_iter().chain(premium).collect()
+    models.to_vec()
 }
 
 impl AgentSlide {
@@ -475,11 +473,11 @@ impl AgentSlide {
             );
 
         if has_disabled {
-            col = col.with_child(
-                Container::new(self.render_upgrade_banner(appearance))
-                    .with_margin_top(12.)
-                    .finish(),
-            );
+        // col = col.with_child(
+        //     Container::new(self.render_upgrade_banner(appearance))
+        //         .with_margin_top(12.)
+        //         .finish(),
+        // );
         }
 
         col.finish()
@@ -755,8 +753,6 @@ impl AgentSlide {
 
             let trailing: Box<dyn Element> = if is_default {
                 make_pill("Recommended")
-            } else if requires_upgrade {
-                make_pill("Premium")
             } else {
                 Empty::new().finish()
             };

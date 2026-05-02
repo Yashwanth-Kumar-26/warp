@@ -512,11 +512,8 @@ impl OnboardingStateModel {
         self.set_intention(OnboardingIntention::AgentDrivenDevelopment, ctx);
     }
 
-    pub(crate) fn is_model_disabled(&self, model_id: &LLMId) -> bool {
-        self.models
-            .iter()
-            .find(|m| &m.id == model_id)
-            .is_some_and(|m| m.requires_upgrade)
+    pub(crate) fn is_model_disabled(&self, _model_id: &LLMId) -> bool {
+        false
     }
 
     pub(crate) fn request_upgrade(&mut self, ctx: &mut ModelContext<Self>) {

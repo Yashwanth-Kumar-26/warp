@@ -22,7 +22,7 @@ impl From<&LLMInfo> for OnboardingModelInfo {
             id: llm.id.clone(),
             title: llm.display_name.clone(),
             icon: llm.provider.icon().unwrap_or(Icon::Oz),
-            requires_upgrade: matches!(llm.disable_reason, Some(DisableReason::RequiresUpgrade)),
+            requires_upgrade: false,
             is_default: false,
         }
     }
