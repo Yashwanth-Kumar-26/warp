@@ -11,6 +11,7 @@ use serde_json::{Map, Value};
 use tempfile::NamedTempFile;
 use uuid::Uuid;
 use warp_cli::agent::Harness;
+use warp_cli::{ANTHROPIC_AUTH_TOKEN_OVERRIDE_ENV, ANTHROPIC_BASE_URL_OVERRIDE_ENV};
 use warpui::{ModelHandle, ModelSpawner};
 
 use crate::ai::agent::conversation::AIConversationId;
@@ -176,7 +177,16 @@ fn claude_command(
     if let Some(sp_path) = system_prompt_path {
         let _ = write!(cmd, " --append-system-prompt-file '{sp_path}'");
     }
-    format!("{cmd} < '{prompt_path}'")
+
+    let mut prefix = String::new();
+    if let Ok(base_url) = std::env::var(ANTHROPIC_BASE_URL_OVERRIDE_ENV) {
+        let _ = write!(prefix, "ANTHROPIC_BASE_URL='{base_url}' ");
+    }
+    if let Ok(auth_token) = std::env::var(ANTHROPIC_AUTH_TOKEN_OVERRIDE_ENV) {
+        let _ = write!(prefix, "ANTHROPIC_AUTH_TOKEN='{auth_token}' ");
+    }
+
+    format!("{prefix}{cmd} < '{prompt_path}'")
 }
 
 /// Runtime state of a [`ClaudeHarnessRunner`].
@@ -554,6 +564,16 @@ fn prepare_claude_config(
         .entry(working_dir.to_string_lossy().into_owned())
         .or_default()
         .has_trust_dialog_accepted = true;
+    if let Ok(base_url) = std::env::var(ANTHROPIC_BASE_URL_OVERRIDE_ENV) {
+        claude_config
+            .extra
+            .insert("baseUrl".to_string(), Value::String(base_url));
+    }
+    if let Ok(auth_token) = std::env::var(ANTHROPIC_AUTH_TOKEN_OVERRIDE_ENV) {
+        claude_config
+            .extra
+            .insert("anthropicAuthToken".to_string(), Value::String(auth_token));
+    }
     if let Some(suffix) = api_key_suffix {
         let responses = claude_config
             .custom_api_key_responses

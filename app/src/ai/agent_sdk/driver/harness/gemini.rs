@@ -9,6 +9,7 @@ use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value};
 use tempfile::NamedTempFile;
 use warp_cli::agent::Harness;
+use warp_cli::GEMINI_BASE_URL_OVERRIDE_ENV;
 use warp_managed_secrets::ManagedSecretValue;
 use warpui::{ModelHandle, ModelSpawner};
 
@@ -252,6 +253,11 @@ fn prepare_gemini_settings(settings_path: &Path, has_system_prompt: bool) -> Res
         .auth
         .get_or_insert_with(GeminiAuth::default)
         .selected_type = Some(GEMINI_API_KEY_AUTH_TYPE.to_owned());
+    if let Ok(base_url) = std::env::var(GEMINI_BASE_URL_OVERRIDE_ENV) {
+        settings
+            .extra
+            .insert("baseUrl".to_string(), Value::String(base_url));
+    }
 
     if has_system_prompt {
         let context = settings.context.get_or_insert_with(GeminiContext::default);

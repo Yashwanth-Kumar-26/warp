@@ -19,6 +19,7 @@ use crate::server::server_api::harness_support::HarnessSupportClient;
 use crate::server::server_api::ServerApi;
 use crate::terminal::model::block::BlockId;
 use crate::terminal::CLIAgent;
+use warp_cli::OPENAI_BASE_URL_OVERRIDE_ENV;
 
 use super::super::terminal::{CommandHandle, TerminalDriver};
 use super::super::{AgentDriver, AgentDriverError};
@@ -371,7 +372,10 @@ fn prepare_codex_config_toml(config_toml_path: &Path, working_dir: &Path) -> Res
         )
     })?;
 
-    set_codex_openai_base_url(&mut doc, CODEX_OPENAI_BASE_URL);
+    let base_url = std::env::var(OPENAI_BASE_URL_OVERRIDE_ENV)
+        .or_else(|_| std::env::var("OPENAI_BASE_URL"))
+        .unwrap_or_else(|_| CODEX_OPENAI_BASE_URL.to_string());
+    set_codex_openai_base_url(&mut doc, &base_url);
 
     let canonical = working_dir.canonicalize().with_context(|| {
         format!(

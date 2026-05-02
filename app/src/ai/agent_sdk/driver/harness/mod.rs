@@ -22,7 +22,8 @@ use crate::terminal::model::block::{BlockId, SerializedBlock};
 use crate::terminal::CLIAgent;
 use crate::util::path::resolve_executable;
 use warp_cli::{
-    OZ_CLI_ENV, OZ_HARNESS_ENV, OZ_PARENT_RUN_ID_ENV, OZ_RUN_ID_ENV, SERVER_ROOT_URL_OVERRIDE_ENV,
+    OZ_CLI_ENV, OZ_HARNESS_ENV, OZ_PARENT_RUN_ID_ENV, OZ_RUN_ID_ENV, ANTHROPIC_BASE_URL_OVERRIDE_ENV,
+    GEMINI_BASE_URL_OVERRIDE_ENV, OPENAI_BASE_URL_OVERRIDE_ENV, SERVER_ROOT_URL_OVERRIDE_ENV,
     SESSION_SHARING_SERVER_URL_OVERRIDE_ENV, WS_SERVER_URL_OVERRIDE_ENV,
 };
 use warp_core::channel::ChannelState;
@@ -299,6 +300,16 @@ fn task_env_vars_for_harness_name(
                 OsString::from(SESSION_SHARING_SERVER_URL_OVERRIDE_ENV),
                 OsString::from(url),
             );
+        }
+
+        if let Ok(url) = std::env::var(ANTHROPIC_BASE_URL_OVERRIDE_ENV) {
+            env_vars.insert(OsString::from("ANTHROPIC_BASE_URL"), OsString::from(url));
+        }
+        if let Ok(url) = std::env::var(OPENAI_BASE_URL_OVERRIDE_ENV) {
+            env_vars.insert(OsString::from("OPENAI_BASE_URL"), OsString::from(url));
+        }
+        if let Ok(url) = std::env::var(GEMINI_BASE_URL_OVERRIDE_ENV) {
+            env_vars.insert(OsString::from("GEMINI_BASE_URL"), OsString::from(url));
         }
     }
 

@@ -39,6 +39,10 @@ pub const OZ_HARNESS_ENV: &str = "OZ_HARNESS";
 pub const SERVER_ROOT_URL_OVERRIDE_ENV: &str = "WARP_SERVER_ROOT_URL";
 pub const WS_SERVER_URL_OVERRIDE_ENV: &str = "WARP_WS_SERVER_URL";
 pub const SESSION_SHARING_SERVER_URL_OVERRIDE_ENV: &str = "WARP_SESSION_SHARING_SERVER_URL";
+pub const ANTHROPIC_BASE_URL_OVERRIDE_ENV: &str = "WARP_ANTHROPIC_BASE_URL";
+pub const ANTHROPIC_AUTH_TOKEN_OVERRIDE_ENV: &str = "WARP_ANTHROPIC_AUTH_TOKEN";
+pub const OPENAI_BASE_URL_OVERRIDE_ENV: &str = "WARP_OPENAI_BASE_URL";
+pub const GEMINI_BASE_URL_OVERRIDE_ENV: &str = "WARP_GEMINI_BASE_URL";
 
 /// Options related to the parent process that spawned this Warp instance.
 #[derive(Debug, Default, Clone, clap::Args)]
